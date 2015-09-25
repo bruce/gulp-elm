@@ -9,8 +9,8 @@ var gutil         = require('gulp-util')
   , child_process = require('child_process')
   , Q             = require('q')
   , elm_make      = 'elm-make'
-  , defaultArgs   = ['--yes'],
-  , defaultExeOptions = {},
+  , defaultArgs   = ['--yes']
+  , defaultExeOptions = {}
   , PLUGIN        = 'gulp-elm';
 
 function processMakeOptions(options) {
