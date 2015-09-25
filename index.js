@@ -15,7 +15,7 @@ var gutil         = require('gulp-util')
 
 function processMakeOptions(options) {
   var args   = defaultArgs
-    , exeOptions = defaultExeOptions,
+    , exeOptions = defaultExeOptions
     , ext    = '.js'
     , exe    = elm_make;
 
