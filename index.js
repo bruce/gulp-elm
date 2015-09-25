@@ -9,11 +9,13 @@ var gutil         = require('gulp-util')
   , child_process = require('child_process')
   , Q             = require('q')
   , elm_make      = 'elm-make'
-  , defaultArgs   = ['--yes']
+  , defaultArgs   = ['--yes'],
+  , defaultExeOptions = {},
   , PLUGIN        = 'gulp-elm';
 
 function processMakeOptions(options) {
   var args   = defaultArgs
+    , exeOptions = defaultExeOptions,
     , ext    = '.js'
     , exe    = elm_make;
 
@@ -31,13 +33,15 @@ function processMakeOptions(options) {
       else if (ft == 'html') { ext = '.html'; }
       else { throw new gutil.PluginError(PLUGIN, 'filetype is js or html.'); }
     }
+
+    if(options.cwd) { exeOptions.cwd = options.cwd; }
   }
 
-  return {args: args, ext: ext, exe: exe};
+  return {args: args, ext: ext, exe: exe, exeOptions: exeOptions};
 }
 
-function compile(exe, args, callback){
-  var proc    = child_process.spawn(exe, args)
+function compile(exe, args, exeOptions, callback){
+  var proc    = child_process.spawn(exe, args, exeOptions)
     , bStderr = new Buffer(0);
 
   proc.stderr.on('data', function(stderr){
@@ -54,7 +58,7 @@ function init(options) {
   var opts = processMakeOptions(options);
   var deferred = Q.defer();
 
-  compile(opts.exe, ['--yes'], function(err){
+  compile(opts.exe, ['--yes'], opts.exeOptions, function(err){
     if(!!err) { deferred.reject(new gutil.PluginError(PLUGIN, err)); }
     else      { deferred.resolve();   }
   });
@@ -136,7 +140,7 @@ function make(options){
       var deferred = Q.defer()
         , args = opts.args.concat(state.input, '--output', state.tmpOut);
       state.output = path.resolve(process.cwd(), path.basename(file.path, path.extname(file.path)) + opts.ext);
-      compile(state.exe, args, function(err){
+      compile(state.exe, args, state.exeOptions, function(err){
         if(!!err) { deferred.reject({state: state, message: err}); }
         else      { deferred.resolve(state); }
       });

@@ -45,3 +45,9 @@ compile elm files.
     elm output file type.
 
     js(javascript) or html.
+
+* cwd (default: null; current cwd)
+
+    current working directory for execution.
+
+    directory path.
